@@ -15,6 +15,24 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def epoch_validation(model,val_loader,fnet_preds,mode="test",all_labels=[],criterion=None,val_loss=0,iso_preds=[],all_preds=[],iso_forest=None):
+    """
+    Performs validation or testing for one epoch, supporting multiple evaluation modes.
+
+    Args:
+        model (torch.nn.Module): The model to evaluate.
+        val_loader (DataLoader): DataLoader for the validation or test set.
+        fnet_preds (list): List to store FaceNet-based predictions.
+        mode (str): Evaluation mode. "Val" for validation, "Xval" for cross-validation with anomaly detection, "test" for test mode.
+        all_labels (list): List to store true labels (used in validation).
+        criterion (callable, optional): Loss function (used in validation).
+        val_loss (float): Accumulated validation loss.
+        iso_preds (list): List to store Isolation Forest predictions (used in "Xval" mode).
+        all_preds (list): List to store final predictions (used in "Xval" mode).
+        iso_forest (IsolationForest, optional): Isolation Forest model for anomaly detection.
+
+    Returns:
+        val_loss (float): Total validation loss accumulated over the epoch.
+    """
     with torch.no_grad():
             for images, labels in tqdm(val_loader):
                 outputs = model(images.to(device))   
@@ -37,6 +55,19 @@ def epoch_validation(model,val_loader,fnet_preds,mode="test",all_labels=[],crite
                 
 
 def epoch_train(model,train_loader,criterion,running_loss,optimizer):
+    """
+    Performs one training epoch for the given model.
+
+    Args:
+        model (torch.nn.Module): The neural network to train.
+        train_loader (DataLoader): DataLoader providing training batches.
+        criterion (callable): Loss function to optimize.
+        running_loss (float): Accumulated loss for the epoch.
+        optimizer (torch.optim.Optimizer): Optimizer for updating model parameters.
+
+    Returns:
+        running_loss (float): Total loss accumulated over the epoch.
+    """
     for images, labels in tqdm(train_loader):
             images = images.to(device)
             labels = labels.float().unsqueeze(1).to(device)
@@ -54,6 +85,27 @@ def epoch_train(model,train_loader,criterion,running_loss,optimizer):
 
 
 def fine_tune_Xval(train_loader,val_loader,model,optimizer,criterion,num_epochs,results,iso_forest,fold):
+    """
+    Fine-tunes the model using cross-validation, tracks metrics, and applies learning rate scheduling.
+
+    Args:
+        train_loader (DataLoader): DataLoader for training data.
+        val_loader (DataLoader): DataLoader for validation data.
+        model (torch.nn.Module): Model to be fine-tuned.
+        optimizer (torch.optim.Optimizer): Optimizer for model parameters.
+        criterion (callable): Loss function.
+        num_epochs (int): Number of training epochs.
+        results (dict): Dictionary to store metrics and results.
+        iso_forest (IsolationForest): Isolation Forest model for anomaly detection.
+        fold (int): Current fold number for cross-validation.
+
+    Behavior:
+        - Trains and validates the model for the specified number of epochs.
+        - Uses ReduceLROnPlateau scheduler to reduce the learning rate when validation loss plateaus[1][3].
+        - Collects and stores various metrics (balanced accuracy, HTER, validation loss) for FaceNet and Isolation Forest classifiers.
+        - Prints summary statistics for each epoch and fold.
+    """
+    # Initialize learning rate scheduler to reduce LR when validation loss stops improving
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=2, verbose=True)
     for epoch in range(num_epochs):
         print("fine tuning")
@@ -95,6 +147,24 @@ def fine_tune_Xval(train_loader,val_loader,model,optimizer,criterion,num_epochs,
 
 
 def fine_tune_test(train_loader,test_loader,model,optimizer,criterion,num_epochs,results):
+    """
+    Fine-tunes the model on the training set and evaluates on the test set after each epoch (starting from the 4th).
+
+    Args:
+        train_loader (DataLoader): DataLoader for the training data.
+        test_loader (DataLoader): DataLoader for the test data.
+        model (torch.nn.Module): Model to be trained and evaluated.
+        optimizer (torch.optim.Optimizer): Optimizer for updating model parameters.
+        criterion (callable): Loss function.
+        num_epochs (int): Number of training epochs.
+        results (str): Path prefix for saving prediction results per epoch.
+
+    Behavior:
+        - Trains the model for the specified number of epochs.
+        - Prints training loss after each epoch.
+        - Starting from the 4th epoch, evaluates the model on the test set after each epoch.
+        - Saves the test set predictions for each evaluated epoch to a text file.
+    """
     for epoch in range(num_epochs):
         print(f"Epoch {epoch+1}/{num_epochs}")
         model.train()
@@ -114,6 +184,28 @@ def fine_tune_test(train_loader,test_loader,model,optimizer,criterion,num_epochs
             
             
 def fine_tune_val_test(train_loader,val_loader,test_loader,model,optimizer,criterion,num_epochs,results):
+    """
+    Fine-tunes the model using training and validation sets, tracks the best model based on HTER, 
+    and evaluates on the test set when a new best model is found.
+
+    Args:
+        train_loader (DataLoader): DataLoader for the training set.
+        val_loader (DataLoader): DataLoader for the validation set.
+        test_loader (DataLoader): DataLoader for the test set.
+        model (torch.nn.Module): Model to be trained and evaluated.
+        optimizer (torch.optim.Optimizer): Optimizer for model parameters.
+        criterion (callable): Loss function.
+        num_epochs (int): Total number of training epochs.
+        results (str): Path prefix for saving models and prediction results.
+
+    Behavior:
+        - Trains the model starting from the 4th epoch (based on prior cross-validation).
+        - After each epoch, evaluates on the validation set and computes Balanced Accuracy and HTER.
+        - If a new best HTER is achieved (lower than previous best), saves the model and evaluates on the test set.
+        - Saves test set predictions for the best model.
+        - Uses ReduceLROnPlateau scheduler to adjust learning rate based on validation loss.
+        - Prints summary metrics and learning rate after each epoch.
+    """
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=1)
     best_hter = 0.15
     for epoch in range(4,num_epochs):
