@@ -21,8 +21,9 @@ from sklearn.model_selection import train_test_split
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+location= "" # where ml_exercise_therapanacea is stored
 
-results='/home/hamzaoui/Downloads/ml_exercise_therapanacea/label_validation_'
+results=f'{location}/ml_exercise_therapanacea/label_validation_'
 
 
 # =============================================================================
@@ -53,8 +54,8 @@ validation_transform = T.Compose([
 
 # 
 dataset = CustomDataset(
-    img_dir='/home/hamzaoui/Downloads/ml_exercise_therapanacea/train_img',
-    label_file='/home/hamzaoui/Downloads/ml_exercise_therapanacea/label_train.txt',
+    img_dir=f'{location}/ml_exercise_therapanacea/train_img',
+    label_file=f'{location}/ml_exercise_therapanacea/label_train.txt',
     transform=train_transform,mode="t"
 )
 
@@ -74,8 +75,8 @@ samples_weights = weights[train_labels.values]
 sampler = WeightedRandomSampler(samples_weights, len(samples_weights), replacement=True)
 
 train_dataset = Subset(dataset, train_idx)
-val_dataset = Subset(CustomDataset(img_dir='/home/hamzaoui/Downloads/ml_exercise_therapanacea/train_img',
-                                   label_file='/home/hamzaoui/Downloads/ml_exercise_therapanacea/label_train.txt',
+val_dataset = Subset(CustomDataset(img_dir=f'{location}/ml_exercise_therapanacea/train_img',
+                                   label_file=f'{location}/ml_exercise_therapanacea/label_train.txt',
                                    transform=train_transform,mode="t"), val_idx)
     
 
@@ -86,7 +87,7 @@ val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 # =============================================================================
 
 Test_dataset = CustomDataset(
-    img_dir='/home/hamzaoui/Downloads/ml_exercise_therapanacea/train_img',
+    img_dir=f'{location}/ml_exercise_therapanacea/train_img',
     label_file='',
     transform=validation_transform,mode="v"
 )
