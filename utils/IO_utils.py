@@ -14,6 +14,21 @@ from pathlib import Path
 
 
 class CustomDataset(Dataset):
+    """
+    Custom PyTorch Dataset for loading images and their corresponding labels.
+
+    Args:
+        img_dir (str or Path): Directory containing image files.
+        label_file (str): Path to the label file (CSV or text).
+        mode (str): "t" for training/validation (labels available), any other value for test (no labels).
+        transform (callable, optional): Optional transform to be applied on an image.
+
+    Behavior:
+        - In training/validation mode ("t"), loads labels from the provided file.
+        - In test mode, returns -1 as a placeholder label.
+        - Images are expected to be named as zero-padded 6-digit numbers (e.g., 000001.jpg).
+    """
+    
     def __init__(self, img_dir, label_file, mode, transform=None):
         self.img_dir = Path(img_dir)
         self.mode = mode
