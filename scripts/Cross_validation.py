@@ -18,7 +18,7 @@ from facenet import FaceNetWithReduction
 from sklearn.ensemble import IsolationForest
 from train_validate import fine_tune_Xval
 
-
+location = "" # where the folder ml_exercise_therapanacea is stored
 train_transform = T.Compose([
     T.Resize(160),
     T.RandomHorizontalFlip(p=0.5),
@@ -29,8 +29,8 @@ train_transform = T.Compose([
 ])
 
 dataset = CustomDataset(
-    img_dir='/home/hamzaoui/Downloads/ml_exercise_therapanacea/train_img',
-    label_file='/home/hamzaoui/Downloads/ml_exercise_therapanacea/label_train.txt',
+    img_dir=f'{location}/ml_exercise_therapanacea/train_img',
+    label_file=f'{location}/ml_exercise_therapanacea/label_train.txt',
     transform=train_transform,mode="t"
 )
 
@@ -65,7 +65,7 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(dataset.labels['label'],
     sampler = WeightedRandomSampler(samples_weights, len(samples_weights), replacement=True)
     
     train_dataset = Subset(dataset, train_idx)
-    val_dataset = Subset(CustomDataset(img_dir='/home/hamzaoui/Downloads/ml_exercise_therapanacea/train_img',label_file='/home/hamzaoui/Downloads/ml_exercise_therapanacea/label_train.txt',transform=train_transform,mode="t"), val_idx)
+    val_dataset = Subset(CustomDataset(img_dir='{location}/ml_exercise_therapanacea/train_img',label_file='{location}/ml_exercise_therapanacea/label_train.txt',transform=train_transform,mode="t"), val_idx)
     
     train_loader = DataLoader(train_dataset, batch_size=32, sampler=sampler) 
     val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
