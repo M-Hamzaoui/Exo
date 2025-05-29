@@ -18,9 +18,10 @@ import numpy as np
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+location = "" # where ml_exercise_therapanacea is stored
 
-results='/home/hamzaoui/Downloads/ml_exercise_therapanacea/label_validation.txt'
-weights='/home/hamzaoui/Downloads/ml_exercise_therapanacea/label_validation_best_model.pt'
+results=f'{location}/ml_exercise_therapanacea/label_validation.txt'
+weights=f'{location}/ml_exercise_therapanacea/label_validation_best_model.pt'
 
 # =============================================================================
 #                            Trasnforamtions 
@@ -44,7 +45,7 @@ validation_transform = T.Compose([
 # =============================================================================
 
 Test_dataset = CustomDataset(
-    img_dir='/home/hamzaoui/Downloads/ml_exercise_therapanacea/train_img',
+    img_dir=f'{location}/ml_exercise_therapanacea/train_img',
     label_file='',
     transform=validation_transform,mode="v"
 )
