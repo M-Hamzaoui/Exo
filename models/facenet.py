@@ -10,6 +10,24 @@ import torch.nn as nn
 from facenet_pytorch import InceptionResnetV1
 
 class FaceNetWithReduction(nn.Module):
+    """
+    Custom neural network for face classification based on a modified FaceNet (InceptionResnetV1) backbone.
+
+    Structure:
+        - Uses a pretrained InceptionResnetV1 model from facenet-pytorch as the backbone for feature extraction.
+        - Replaces the final classification layer to output 128-dimensional embeddings.
+        - Freezes all layers except for 'block8', 'last_linear', 'last_bn', and 'logits' to enable selective fine-tuning.
+        - Adds a dimensionality reduction layer (128 -> 4) with LeakyReLU activation.
+        - Adds a final classification layer (4 -> 1) for binary output.
+
+    Args:
+        pretrained (str): Name of the pretrained weights to use ('vggface2' by default).
+        freeze_until (str): Layer name from which to allow gradient updates (default: 'block8').
+
+    Methods:
+        forward(x): Computes the forward pass and returns the classification output.
+        get_features(x, which): Returns either the 128-dimensional or reduced 4-dimensional embedding. (used to fit the isolation forest model, which was disrecarded in the final aproach)
+    """
     def __init__(self, pretrained='vggface2', freeze_until='block8'):
         super().__init__()
 
