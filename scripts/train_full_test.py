@@ -16,8 +16,8 @@ from facenet import FaceNetWithReduction
 from train_validate import fine_tune_test
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-
-results='/home/hamzaoui/Downloads/ml_exercise_therapanacea/less_label_validation_bla_'
+location = "" # where ml_exercise_therapanacea is stored
+results=f'{location}/ml_exercise_therapanacea/label_validation_'
 # =============================================================================
 #                            Train dataset 
 # define transformations, read data, (train data unbalanced) => sampler, loader
@@ -32,8 +32,8 @@ train_transform = T.Compose([
 ])
 
 train_dataset = CustomDataset(
-    img_dir='/home/hamzaoui/Downloads/ml_exercise_therapanacea/train_img',
-    label_file='/home/hamzaoui/Downloads/ml_exercise_therapanacea/label_train.txt',
+    img_dir=f'{location}/ml_exercise_therapanacea/train_img',
+    label_file=f'{location}/ml_exercise_therapanacea/label_train.txt',
     transform=train_transform,mode="t"
 )
 
@@ -60,7 +60,7 @@ validation_transform = T.Compose([
 ])
 
 test_dataset = CustomDataset(
-    img_dir='/home/hamzaoui/Downloads/ml_exercise_therapanacea/train_img',
+    img_dir=f'{location}/ml_exercise_therapanacea/train_img',
     label_file='',
     transform=validation_transform,mode="v"
 )
