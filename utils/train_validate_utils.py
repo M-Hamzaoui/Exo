@@ -106,7 +106,7 @@ def fine_tune_Xval(train_loader,val_loader,model,optimizer,criterion,num_epochs,
         - Prints summary statistics for each epoch and fold.
     """
     # Initialize learning rate scheduler to reduce LR when validation loss stops improving
-    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=2, verbose=True)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=2)
     for epoch in range(num_epochs):
         print("fine tuning")
         model.train()
