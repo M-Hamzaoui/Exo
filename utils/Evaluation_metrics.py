@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon May 26 13:17:28 2025
-
 @author: hamzaoui
 """
 from sklearn.metrics import confusion_matrix
