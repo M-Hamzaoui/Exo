@@ -177,7 +177,6 @@ def fine_tune_test(train_loader,test_loader,model,optimizer,criterion,num_epochs
         
             model.eval()
             fnet_preds = [] 
-
             epoch_validation(model,test_loader,fnet_preds)
             np.savetxt(f"{results}{epoch}.txt", np.array(fnet_preds, dtype=int), fmt="%d")
             
@@ -228,6 +227,7 @@ def fine_tune_val_test(train_loader,val_loader,test_loader,model,optimizer,crite
         if epoch>3: # concluded from cross-validation to monitor values starting 4th epoch
             if HTER< best_hter:
                 best_hter = HTER
+                fnet_preds = [] 
                 torch.save(model.state_dict(), f'{results}best_model_epoch{epoch+1}_HTER{best_hter:.4f}.pt')
                 print(f"Saved new best model at epoch {epoch+1} with HTER {best_hter:.4f}")
                 epoch_validation(model,test_loader,fnet_preds)
