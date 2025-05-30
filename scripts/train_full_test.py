@@ -11,9 +11,9 @@ import torch
 import torchvision.transforms as T
 import torch.optim as optim
 import torch.nn as nn
-from IO_utils import CustomDataset
-from facenet import FaceNetWithReduction
-from train_validate import fine_tune_test
+from utils.IO_utils import CustomDataset
+from models.facenet import FaceNetWithReduction
+from utils.train_validate_utils import fine_tune_test
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 location = "" # where ml_exercise_therapanacea is stored
