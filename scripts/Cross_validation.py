@@ -13,10 +13,10 @@ from sklearn.model_selection import StratifiedKFold
 import torch.optim as optim
 import numpy as np
 import torch.nn as nn
-from IO_utils import CustomDataset
-from facenet import FaceNetWithReduction
+from utils.IO_utils import CustomDataset
+from models.facenet import FaceNetWithReduction
 from sklearn.ensemble import IsolationForest
-from train_validate import fine_tune_Xval
+from utils.train_validate_utils import fine_tune_Xval
 
 location = "" # where the folder ml_exercise_therapanacea is stored
 train_transform = T.Compose([
@@ -67,7 +67,7 @@ for fold, (train_idx, val_idx) in enumerate(kfold.split(dataset.labels['label'],
 
     
     train_dataset = Subset(dataset, train_idx)
-    val_dataset = Subset(CustomDataset(img_dir='{location}/ml_exercise_therapanacea/train_img',label_file='{location}/ml_exercise_therapanacea/label_train.txt',transform=train_transform,mode="t"), val_idx)
+    val_dataset = Subset(CustomDataset(img_dir=f'{location}/ml_exercise_therapanacea/train_img',label_file=f'{location}/ml_exercise_therapanacea/label_train.txt',transform=train_transform,mode="t"), val_idx)
     
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True) #sampler=sampler) 
     val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
