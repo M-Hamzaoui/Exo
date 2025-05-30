@@ -20,7 +20,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 location = "" # where ml_exercise_therapanacea is stored
 
-results=f'{location}/ml_exercise_therapanacea/label_validation.txt'
+results=f'{location}/ml_exercise_therapanacea/label_val.txt'
 weights=f'{location}/ml_exercise_therapanacea/label_validation_best_model.pt'
 
 # =============================================================================
