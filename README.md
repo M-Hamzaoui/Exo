@@ -30,7 +30,7 @@ Develop a binary classifier evaluated primarily using the Half Total Error Rate 
 4. **Addressing Class Imbalance:**
 Alternatives:
     - Employed a weighted random sampler in the data loader to balance training batches.
-    - Applied weighted binary cross-entropy (BCE) loss, assigning higher weight to the minority class (class 0).
+    - Applied weighted binary cross-entropy (BCE) loss, assigning higher weight to the minority class (class 0). (I chose this approach, but both gave same result)
 
 5. **Training and Evaluation Protocol:**
     - Adopted a 90%-10% train-validation split from the training data.
