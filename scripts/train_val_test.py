@@ -70,9 +70,10 @@ train_labels = dataset.labels.iloc[train_idx]['label']
 class_counts = train_labels.value_counts().sort_index().values
 pos_weight = torch.tensor([class_counts[0]/class_counts[1]],device=device)  # Penalize class 0 more
 
-weights = 1./torch.tensor(class_counts, dtype=torch.float, device=device)
-samples_weights = weights[train_labels.values]
-sampler = WeightedRandomSampler(samples_weights, len(samples_weights), replacement=True)
+# when trying to counter data imbalance using random sampling
+# weights = 1./torch.tensor(class_counts, dtype=torch.float, device=device)
+# samples_weights = weights[train_labels.values]
+# sampler = WeightedRandomSampler(samples_weights, len(samples_weights), replacement=True)
 
 train_dataset = Subset(dataset, train_idx)
 val_dataset = Subset(CustomDataset(img_dir=f'{location}/ml_exercise_therapanacea/train_img',
@@ -80,7 +81,7 @@ val_dataset = Subset(CustomDataset(img_dir=f'{location}/ml_exercise_therapanacea
                                    transform=train_transform,mode="t"), val_idx)
     
 
-train_loader = DataLoader(train_dataset, batch_size=32, sampler=sampler)
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True) #sampler=sampler)
 val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 # =============================================================================
 #                         Test dataset 
@@ -104,9 +105,6 @@ optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr
 
 # Penalize error on minority class (0 here)
 pos_weight = torch.tensor([class_counts[0]/class_counts[1]],device=device) 
-
-weights = 1./torch.tensor(class_counts, dtype=torch.float, device=device)
-
 
 criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 num_epochs= 30
