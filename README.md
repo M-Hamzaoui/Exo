@@ -28,6 +28,7 @@ Develop a binary classifier evaluated primarily using the Half Total Error Rate 
     - Experimented with varying degrees of layer freezing during fine-tuning; initializing with pretrained weights consistently improved performance.
 
 4. **Addressing Class Imbalance:**
+Alternatives:
     - Employed a weighted random sampler in the data loader to balance training batches.
     - Applied weighted binary cross-entropy (BCE) loss, assigning higher weight to the minority class (class 0).
 
